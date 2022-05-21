@@ -1,2 +1,2 @@
-# -Database_technologies
+# Database_technologies
 Учебный репозиторий, университет Дубна, Технологии баз данных, 2022 год.
