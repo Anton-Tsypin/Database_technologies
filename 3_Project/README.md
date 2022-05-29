@@ -68,10 +68,36 @@ CREATE TABLE incident(
         id serial PRIMARY KEY,
         user_id integer,
         room_id integer,
-        attempt_id integer,
+        attempt_id integer DEFAULT null,
         FOREIGN KEY (user_id) REFERENCES user_(id),
         FOREIGN KEY (room_id) REFERENCES room(id),
         FOREIGN KEY (attempt_id) REFERENCES attempt(id)
+);
+
+CREATE TABLE request(
+        id serial PRIMARY KEY,
+        duration,
+        user_id integer,
+        room_id integer,
+        FOREIGN KEY (user_id) REFERENCES user_(id),
+        FOREIGN KEY (room_id) REFERENCES room(id)
+);
+
+CREATE TABLE notice(
+        id serial PRIMARY KEY,
+        user_id integer,
+        body varchar(200),
+        FOREIGN KEY (user_id) REFERENCES user_(id)
+);
+
+CREATE TABLE action(
+        id serial PRIMARY KEY,
+        time time,
+        user_id,
+        room_id,
+        body varchar(200),
+        FOREIGN KEY (user_id) REFERENCES user_(id),
+        FOREIGN KEY (room_id) REFERENCES room(id)
 );
 ```
 ### SQL запросы
@@ -102,9 +128,9 @@ INSERT INTO user_(name, room_id) VALUES ('Michael', 1);
 
 #### Администратор. Выдача прав по доступу в определённые помещения (единичное, временное, постоянное)
 ```SQL
-INSER INTO access(duration, user_id, room_id) VALUES ('one-time', 2, 4);
-INSER INTO access(duration, hours, user_id, room_id) VALUES ('temporary', 8, 1, 2);
-INSER INTO access(duration, user_id, room_id) VALUES ('permanent', 3, 3);
+INSERT INTO access(duration, user_id, room_id) VALUES ('one-time', 2, 4);
+INSERT INTO access(duration, hours, user_id, room_id) VALUES ('temporary', 8, 1, 2);
+INSERT INTO access(duration, user_id, room_id) VALUES ('permanent', 3, 3);
 ```
 
 #### Сотрудник. Попытка прохода в определенное помещение
@@ -117,38 +143,48 @@ INSERT INTO attempt(success, user_id, room_id) VALUES ('false', 2, 4)
 INSERT INTO incident(user_id, room_id, acce) VALUES (2, 4, SELECT id FROM attemp WHERE success = 'false' , user_id = 2, room_id = 4)
 
 END IF
+INSERT INTO action(time, user_id, room_id, body) VALUE (CURRENT_TIMESTAMP(), 2, 4, 'entry attempt')
 ```
 #### Администратор. Уведомления о попытке прохода без разрешения
 ```SQL
+IF NOT (SELECT id FROM access WHERE user_id = 2 AND room_id = 4) THEN
+INSERT INTO notice(user_id, body) VALUES (2, 'attempt to enter the room without access')
 
+END IF
 ```
 
 #### Сотрудник. Запрос доступа для прохода (разовое, временное)
 ```SQL
-
+INSERT INTO request(duration, user_id, room_id) VALUES ('one-time', 5, 4)
 ```
 
 #### Администратор. Просмотр списка всех пользователей с поиском по: правам, фамилии/имени/отчеству, по активности. Сортировка по: активности последней, пагинация
 ```SQL
-
+SELECT * FROM user_
+ORDER BY current_room_id
 ```
 
 #### Администратор. Просмотр всех действий конкретного пользователя (время входа, время выхода; поиск по помещению, пагинация)
 ```SQL
-
+SELECT * FROM action WHERE user_id = 2
 ```
 
 #### Администратор. Некоторые помещения должны иметь максимальное время нахождения в них, уведомлять администратора если сотрудник превышает это время. Записывать такие инциденты в базу
 ```SQL
-
+IF SELECT hours FROM room WHERE id = 3 AND id = SELECT current_room_id FROM user_ WHERE id = 2 < SELECT hours FROM access WHERE room_id = 3 THEN
+INSERT INTO incident(user_id, room_id) VALUES (2, 3)
+END IF;
 ```
 
 #### Администратор. Забрать права (Предусмотреть случай, когда сотрудник вошёл в помещение и у него забрали права на выход)
 ```SQL
-
+IF SELECT current_room_id FROM user_ WHERE user_id = 2 != 4 THEN
+DELETE FROM access WHERE user_id = 2 AND room_id = 4
+END IF;
 ```
 
 #### Администратор. Просмотр всех инцидентов (сортировка по дате, сотруднику). Возможность решить инцидент (записать решение)
 ```SQL
-
+SELECT * FROM incident
+ORDER BY user_id
 ```
