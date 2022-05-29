@@ -57,11 +57,12 @@ ORDER BY score DESC;
 8. Из запроса №7 вывести несколькими способами на экран только 5 студентов с максимальным баллом
 
 ```SQL
-
+SELECT * FROM student
+WHERE score = 5;
 ```
 
 9. Выведите хобби и с использованием условного оператора сделайте риск словами:
-  
+ 
    \>=8 - очень высокий  
    \>=6 & <8 - высокий  
    \>=4 & <8 - средний  
@@ -69,11 +70,21 @@ ORDER BY score DESC;
    \<2 - очень низкий  
 
 ```SQL
-
+SELECT id, name,
+CASE
+  WHEN risk >= 0.8 THEN 'очень высокий'
+  WHEN risk >= 0.6 AND risk < 0.8 THEN 'высокий'
+  WHEN risk >= 0.4 AND risk < 0.6 THEN 'средний'
+  WHEN risk >= 0.2 AND risk < 0.4 THEN 'низкий'
+  WHEN risk < 0.2 THEN 'очень низкий'
+END AS risk
+FROM hobby;
 ```
 
 10. Вывести 3 хобби с максимальным риском
 
 ```SQL
-
+SELECT * FROM hobby
+ORDER BY risk DESC
+LIMIT 3;
 ```
