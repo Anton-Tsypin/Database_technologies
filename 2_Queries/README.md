@@ -19,31 +19,39 @@ WHERE CAST(group_num AS character) LIKE '4%';
 3. Вывести всех студентов, отсортировать по убыванию номера группы и имени от а до я
 
 ```SQL
-
+SELECT * FROM student
+ORDER BY group_num, name;
 ```
 
 4. Вывести студентов, средний балл которых больше 4 и отсортировать по баллу от большего к меньшему
 
 ```SQL
-
+SELECT * FROM student
+WHERE score >= 4
+ORDER BY score DESC;
 ```
 
 5. Вывести на экран название и риск футбола и хоккея
 
 ```SQL
-
+SELECT name, risk FROM hobby
+WHERE name = 'Футбол' OR name = 'Программирование';
 ```
 
 6. Вывести id хобби и id студента которые начали заниматься хобби между двумя заданными датами (выбрать самим) и студенты должны до сих пор заниматься хобби
 
 ```SQL
-
+SELECT id_hobby, n_z FROM student_hobby
+WHERE date_start BETWEEN '12.10.1990' AND '01.01.2010'
+AND date_finish IS null;
 ```
 
 7. Вывести студентов, средний балл которых больше 4.5 и отсортировать по баллу от большего к меньшему
 
 ```SQL
-
+SELECT * FROM student
+WHERE score > 4.5
+ORDER BY score DESC;
 ```
 
 8. Из запроса №7 вывести несколькими способами на экран только 5 студентов с максимальным баллом
