@@ -17,7 +17,7 @@
 
 ## Реализация
 
-#### Создание таблиц
+### Создание таблиц
 ```SQL
 CREATE TABLE room(
         id serial PRIMARY KEY,
@@ -57,7 +57,26 @@ CREATE TABLE incident(
         FOREIGN KEY (user_id) REFERENCES user_(id)
 );
 ```
-#### SQL запросы
+### SQL запросы
+
+#### Создание комнат
+
 ```SQL
+INSERT INTO room(id, name)
+VALUES (1, 'office');
+```
+
+#### Создание админа только через запрос
+
+```SQL
+INSERT INTO user_(id, name, room_id, role)
+VALUES (1, 'Vasya', 1, 'admin');
+
+INSERT INTO access(id, duration, user_id, room_id)
+VALUES (1, 'permanent', 1, 1);
+```
+
+```SQL
+
 
 ```
